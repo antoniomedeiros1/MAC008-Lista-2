@@ -1,0 +1,49 @@
+name: Compile PDF
+on:
+  push:
+
+jobs:
+  compile:
+    name: Compile Notebooks
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout actions
+      uses: actions/checkout@v3
+    
+    - name: Setup Python
+      uses: ./.github/actions/python-setup
+    
+    - name: Install Pandoc and xelatex
+      uses: ./.github/actions/install-pandoc
+    
+    - name: Custom fix
+      run: |
+        sed "s/if 'date' in nb.metadata/if true/g" .venv/share/jupyter/nbconvert/templates/latex/base.tex.j2 -i
+        sed "s/if 'authors' in nb.metadata/if true/g" .venv/share/jupyter/nbconvert/templates/latex/base.tex.j2 -i
+        sed "s/title{.*}/title{MAC008 - Introdução ao Método dos Elementos Finitos - Lista 2}/g" .venv/share/jupyter/nbconvert/templates/latex/base.tex.j2 -i
+        sed "s/date{.*}/date{}/g" .venv/share/jupyter/nbconvert/templates/latex/base.tex.j2 -i
+        sed "s/author{.*}/author{Antonio José de Medeiros Filho - 201965502B}/g" .venv/share/jupyter/nbconvert/templates/latex/base.tex.j2 -i
+    
+    - name: Compile PDF (versao com codigo)
+      shell: bash
+      run: |
+        cd ${{ github.workspace }}
+        source .venv/bin/activate 
+        python3 -m bookbook.latex --output-file relatorio_codigo.pdf --pdf
+    
+    - name: Copy template
+      run: |
+        cd ${{ github.workspace }}
+        cp templates/* .venv/share/jupyter/nbconvert/templates/latex/
+
+    - name: Compile PDF using template
+      shell: bash
+      run: |
+        cd ${{ github.workspace }}
+        source .venv/bin/activate 
+        python3 -m bookbook.latex --output-file relatorio.pdf --pdf --template templates/*
+
+    - name: Commit & Push changes
+      uses: actions-js/push@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}

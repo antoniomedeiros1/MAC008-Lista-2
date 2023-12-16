@@ -1,0 +1,17 @@
+name: 'Install Pandoc'
+description: 'Install Pandoc and xelatex'
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Checkout actions'
+      uses: 'actions/checkout@v3'
+    - shell: bash
+      run: |
+        wget https://github.com/jgm/pandoc/releases/download/2.14/pandoc-2.14-1-amd64.deb
+        sudo dpkg -i pandoc-2.14-1-amd64.deb
+        sudo apt-get install -f
+        rm pandoc-2.14-1-amd64.deb
+    - shell: bash
+      run: |
+        sudo apt update
+        sudo apt install texlive-xetex
