@@ -10,11 +10,27 @@ jobs:
     - name: Checkout actions
       uses: actions/checkout@v3
     
-    - name: Setup Python
-      uses: ./.github/actions/python-setup
+    - name: Python Setup
+      run: |
+        pip install virtualenv
+        cd ${{ github.workspace }}
+        python3 -m venv .venv
+        source .venv/bin/activate
+        pip install -r ./requirements.txt
+        cd -
     
-    - name: Install Pandoc and xelatex
-      uses: ./.github/actions/install-pandoc
+    - name: Install Pandoc
+      shell: bash
+      run: |
+        wget https://github.com/jgm/pandoc/releases/download/2.14/pandoc-2.14-1-amd64.deb
+        sudo dpkg -i pandoc-2.14-1-amd64.deb
+        sudo apt-get install -f
+        rm pandoc-2.14-1-amd64.deb
+    
+    - name: Install xelatex
+      run: |
+        sudo apt update
+        sudo apt install texlive-xetex
     
     - name: Custom fix
       run: |
