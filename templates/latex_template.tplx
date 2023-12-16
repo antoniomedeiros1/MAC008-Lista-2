@@ -1,0 +1,13 @@
+((*- extends 'base.tex.j2' -*))
+
+((* block title *))
+\title{MAC008 - Introdução ao Método dos Elementos Finitos - Lista 1}
+((* endblock title *))
+
+((* block date *))
+\date{}
+((* endblock date *))
+
+((* block author *))
+\author{Antonio José de Medeiros Filho - 201965502B}
+((* endblock author *))
